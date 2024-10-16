@@ -130,6 +130,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="adler.c" />
+    <ClCompile Include="chunk.c" />
     <ClCompile Include="crc.c" />
     <ClCompile Include="huffman.c" />
     <ClCompile Include="inflate.c" />
