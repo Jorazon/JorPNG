@@ -1,9 +1,9 @@
 #pragma once
 
 #include <stdint.h>
-§§§§§q1
+
 // https://www.rfc-editor.org/rfc/rfc1950
-// // https://www.ietf.org/rfc/rfc1951.txt
+// https://www.ietf.org/rfc/rfc1951.txt
 
 typedef struct zlib_stream_struct {
   uint8_t CMF; // Compression Method and Flags
@@ -22,10 +22,10 @@ typedef struct zlib_stream_struct {
 // Check bits for CMF and FLG. The FCHECK value must be such that CMF and FLG, when viewed as a 16 - bit unsigned integer stored in MSB order(CMF * 256 + FLG), is a multiple of 31.
 #define FCHECK(FLG) (FLG) & 0xFF
 // Preset dictionary
-#define FDIC(FLG) (CMF >> 5) & 0x1
+#define FDIC(FLG) (FLG >> 5) & 0x1
 // Compression level
 // 0 - fastest algorithm
 // 1 - fast algorithm
 // 2 - default algorithm
 // 3 - maximum compression, slowest algorithm
-#define FLEVEL(FLG) (CMF >> 6) & 0x3
+#define FLEVEL(FLG) (FLG >> 6) & 0x3

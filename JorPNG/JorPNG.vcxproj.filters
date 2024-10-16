@@ -33,6 +33,9 @@
     <ClCompile Include="adler.c">
       <Filter>Source Files\zlib</Filter>
     </ClCompile>
+    <ClCompile Include="huffman.c">
+      <Filter>Source Files\zlib</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="your_image.png">
@@ -50,6 +53,9 @@
       <Filter>Header Files\zlib</Filter>
     </ClInclude>
     <ClInclude Include="inflate.h">
+      <Filter>Header Files\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="huffman.h">
       <Filter>Header Files\zlib</Filter>
     </ClInclude>
   </ItemGroup>
