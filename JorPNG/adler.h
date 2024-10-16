@@ -2,4 +2,4 @@
 
 #include <stdint.h>
 
-unsigned long update_adler32(unsigned long adler, unsigned char* buf, size_t len);
+uint32_t update_adler32(uint32_t adler, uint8_t* buf, size_t len);

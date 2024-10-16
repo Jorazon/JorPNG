@@ -11,16 +11,16 @@
 
  Usage example:
 
-   unsigned long adler = 1L;
+   uint32_t adler = 1L;
 
    while (read_buffer(buffer, length) != EOF) {
      adler = update_adler32(adler, buffer, length);
    }
    if (adler != original_adler) error();
 */
-unsigned long update_adler32(unsigned long adler, unsigned char* buf, size_t len) {
-  unsigned long s1 = adler & 0xffff;
-  unsigned long s2 = (adler >> 16) & 0xffff;
+uint32_t update_adler32(uint32_t adler, uint8_t* buf, size_t len) {
+  uint32_t s1 = adler & 0xffff;
+  uint32_t s2 = (adler >> 16) & 0xffff;
 
   for (size_t n = 0; n < len; n++) {
     s1 = (s1 + buf[n]) % BASE;
@@ -28,3 +28,5 @@ unsigned long update_adler32(unsigned long adler, unsigned char* buf, size_t len
   }
   return (s2 << 16) + s1;
 }
+
+uint64_t;

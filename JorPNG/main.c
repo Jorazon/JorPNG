@@ -10,7 +10,7 @@
 
 // PNG file signature (8 bytes)
 // http://www.libpng.org/pub/png/spec/1.2/PNG-Rationale.html#R.PNG-file-signature
-const unsigned char png_signature[8] = { 0x89, 'P', 'N', 'G', '\r', '\n', 0x1A, '\n'};
+const uint8_t png_signature[8] = { 0x89, 'P', 'N', 'G', '\r', '\n', 0x1A, '\n'};
 
 void read_png(const char* filename) {
   FILE* file = fopen(filename, "rb");
@@ -20,7 +20,7 @@ void read_png(const char* filename) {
   }
 
   // Read and verify PNG signature
-  unsigned char signature[8];
+  uint8_t signature[8];
   fread(signature, 1, 8, file);
   if (memcmp(signature, png_signature, 8) != 0) {
     printf("Not a PNG file\n");
@@ -43,7 +43,7 @@ void read_png(const char* filename) {
     fread(&chunk.chunk_type, 4, 1, file);
     
     // Allocate memory for chunk data
-    chunk.data = (unsigned char*)malloc(chunk.length);
+    chunk.data = (uint8_t*)malloc(chunk.length);
     
     if (chunk.length) { // if length is 0, don't do data operations
       if (chunk.data) {
@@ -63,7 +63,7 @@ void read_png(const char* filename) {
 
     fprintf(stdout, "%c%c%c%c chunk (%08X)\n", chunk.chunk_type & 0xFF, chunk.chunk_type >> 8 & 0xFF, chunk.chunk_type >> 16 & 0xFF, chunk.chunk_type >> 24 & 0xFF, chunk.crc);
 
-    uint32_t c = chunk_crc(&chunk.chunk_type, chunk.data, chunk.length);
+    uint32_t c = chunk_crc((uint8_t*) &chunk.chunk_type, chunk.data, chunk.length);
 
     if (chunk.crc != c) {
       fprintf(stderr, "CRC mismatch! %X != %X\n", chunk.crc, c);

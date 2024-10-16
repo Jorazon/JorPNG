@@ -7,5 +7,5 @@
 #define POLYNOMIAL 0b11101101101110001000001100100000UL
 //#define POLYNOMIAL 0xedb88320L
 
-unsigned long chunk_crc(unsigned char* type, unsigned char* buf, int len);
-unsigned long crc(unsigned char* buf, int len);
+uint32_t chunk_crc(uint8_t* type, uint8_t* buf, int len);
+uint32_t crc(uint8_t* buf, int len);
