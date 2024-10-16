@@ -129,11 +129,12 @@ void read_png(const char* filename) {
   fclose(file);
 }
 
+// Validate crc code
 void crcTest() {
   uint8_t data[3] = {'a', 'b', 'c'};
   uint32_t expected = 0x352441C2;
   uint32_t result = crc(data, sizeof(data));
-  printf("%X %X", expected, result);
+  printf("%X == %X: %s", expected, result, result == expected ? "True" : "False");
 }
 
 int main() {
