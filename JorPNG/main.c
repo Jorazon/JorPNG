@@ -1,11 +1,7 @@
 #include <stdio.h>
 #include <stdint.h>
-
-#ifdef _WIN32
-#include <winsock.h>
-#else
-#include <arpa/inet.h>
-#endif
+#include <string.h>
+#include <stdlib.h>
 
 #define __builtin_bswap32(word) (word & 0xff000000) >> 24 | (word & 0xff0000) >> 8 | (word & 0xff00) << 8 | (word & 0xff) << 24
 
@@ -15,9 +11,6 @@
 // PNG file signature (8 bytes)
 // http://www.libpng.org/pub/png/spec/1.2/PNG-Rationale.html#R.PNG-file-signature
 const unsigned char png_signature[8] = { 0x89, 'P', 'N', 'G', '\r', '\n', 0x1A, '\n'};
-
-unsigned char compression_levels[4][8] = { "FASTEST", "FAST", "DEFAULT", "MAXIMUM" };
-unsigned char color_types[7][21] = { "Grayscale", "", "RGB", "Palette", "grayscale with alpha", "", "RGBA"};
 
 void read_png(const char* filename) {
   FILE* file = fopen(filename, "rb");
@@ -34,6 +27,8 @@ void read_png(const char* filename) {
     fclose(file);
     return;
   }
+
+  fprintf(stdout, "PNG file\n");
 
   // Start reading chunks
   int hasMore = 1;
@@ -83,18 +78,7 @@ void read_png(const char* filename) {
       memcpy(&ihdr, chunk.data, sizeof(png_IHDR));
       ihdr.width = __builtin_bswap32(ihdr.width);
       ihdr.height = __builtin_bswap32(ihdr.height);
-
-     fprintf(stdout, "\
-PNG Image\n\
-Width: %u\n\
-Height: %u\n\
-Bit depth: %u\n\
-Color type: %s\n\
-Compression method: %u\n\
-Filter method: %u\n\
-Interlace method: %u\n\
-",
-      ihdr.width, ihdr.height, ihdr.bit_depth, color_types[ihdr.color_type], ihdr.compression_method, ihdr.filter_method, ihdr.interlace_method);
+      print_IHDR(&ihdr);
       break;
     }
     case IDAT: {// Data chunk
@@ -107,6 +91,28 @@ Interlace method: %u\n\
         fclose(file);
         return;
       }
+      break;
+    }
+    case gAMA: {
+      png_gAMA gama = { 0 };
+      memcpy(&gama, chunk.data, sizeof(png_gAMA));
+      gama.gamma = __builtin_bswap32(gama.gamma);
+      print_gAMA(&gama);
+      break;
+    }
+    case sRGB: {
+      png_sRGB srgb = { 0 };
+      memcpy(&srgb, chunk.data, sizeof(png_sRGB));
+      srgb.rendering_intent = __builtin_bswap32(srgb.rendering_intent);
+      print_sRGB(&srgb);
+      break;
+    }
+    case pHYs: {
+      png_pHYs phys = { 0 };
+      memcpy(&phys, chunk.data, sizeof(png_pHYs));
+      phys.ppuX = __builtin_bswap32(phys.ppuX);
+      phys.ppuY = __builtin_bswap32(phys.ppuY);
+      print_pHYs(&phys);
       break;
     }
     case IEND:// End of PNG file
