@@ -45,7 +45,7 @@ void read_png(const char* filename) {
     // Allocate memory for chunk data
     chunk.data = (uint8_t*)malloc(chunk.length);
     
-    if (chunk.length) { // if length is 0, don't do data operations
+    if (chunk.length != 0) { // if length is 0, don't do data operations
       if (chunk.data) {
         fread(chunk.data, chunk.length, 1, file);
       }
