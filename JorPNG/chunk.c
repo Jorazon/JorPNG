@@ -1,10 +1,10 @@
 #include "chunk.h"
 
-uint8_t color_types[7][28] = { "Grayscale", "", "Truecolor (RGB)", "Indexed-color (Palette)", "Greyscale with alpha", "", "Truecolor with alpha (RGBA)" };
-uint8_t compression_methods[1][8] = { "Deflate" };
-uint8_t filter_methods[1][19] = { "Adaptive filtering" };
-uint8_t interlace_methods[2][16] = { "No interlace" ,"Adam7 interlace" };
-uint8_t rendering_intents[4][22] = { "Perceptual", "Relative colorimetric", "Saturation", "Absolute colorimetric" };
+uint8_t color_types[][28] = { "Grayscale", "", "Truecolor (RGB)", "Indexed-color (Palette)", "Greyscale with alpha", "", "Truecolor with alpha (RGBA)" };
+uint8_t compression_methods[][8] = { "Deflate" };
+uint8_t filter_methods[][19] = { "Adaptive filtering" };
+uint8_t interlace_methods[][16] = { "No interlace" ,"Adam7 interlace" };
+uint8_t rendering_intents[][22] = { "Perceptual", "Relative colorimetric", "Saturation", "Absolute colorimetric" };
 
 void print_IHDR(png_IHDR* ihdr) {
   fprintf(stdout, "\
