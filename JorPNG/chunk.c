@@ -35,7 +35,7 @@ void print_sRGB(png_sRGB* srgb) {
 void print_pHYs(png_pHYs* phys) {
   fprintf(stdout, "Pixel aspect ratio: %f\n", phys->ppuX / (double)phys->ppuY);
   if (phys->unit) {
-    fprintf(stdout, "Pixel dimensions: %f mm x %f mm\n", 1000.0 / phys->ppuX, 1000.0 / phys->ppuY);
+    fprintf(stdout, "Pixel dimensions: %f x %f mm\n", 1000.0 / phys->ppuX, 1000.0 / phys->ppuY);
     fprintf(stdout, "DPI: %f x %f\n", 0.0254 * phys->ppuX, 0.0254 * phys->ppuY);
   }
 }
