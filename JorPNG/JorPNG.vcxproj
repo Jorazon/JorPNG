@@ -132,8 +132,8 @@
     <ClCompile Include="adler.c" />
     <ClCompile Include="chunk.c" />
     <ClCompile Include="crc.c" />
-    <ClCompile Include="huffman.c" />
     <ClCompile Include="inflate.c" />
+    <ClCompile Include="zlib.c" />
     <ClCompile Include="main.c" />
   </ItemGroup>
   <ItemGroup>
@@ -143,8 +143,8 @@
     <ClInclude Include="adler.h" />
     <ClInclude Include="chunk.h" />
     <ClInclude Include="crc.h" />
-    <ClInclude Include="huffman.h" />
     <ClInclude Include="inflate.h" />
+    <ClInclude Include="zlib.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
