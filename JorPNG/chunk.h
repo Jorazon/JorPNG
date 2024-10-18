@@ -12,7 +12,7 @@
 // Critical chunks
 #define IHDR typeFromName('I','H','D','R') // Image header
 #define PLTE typeFromName('P','L','T','E') // Palette for color type 3
-#define IDAT typeFromName('I','D','A','T') // Image data
+#define IDAT typeFromName('I','D','A','T') // Image data (compressed)
 #define IEND typeFromName('I','E','N','D') // Image trailer (no data)
 // Ancillary chunks
 // Transparency information
@@ -20,7 +20,7 @@
 // Color space information
 #define cHRM typeFromName('c','H','R','M') // Primary chromaticities and white point
 #define gAMA typeFromName('g','A','M','A') // Image gamma
-#define iCCP typeFromName('i','C','C','P') // Embedded ICC profile
+#define iCCP typeFromName('i','C','C','P') // Embedded ICC profile (compressed)
 #define sBIT typeFromName('s','B','I','T') // Significant bits
 #define sRGB typeFromName('s','R','G','B') // Standard RGB color space
 #define cICP typeFromName('c','I','C','P') // Coding-independent code points for video signal type identification
@@ -28,8 +28,8 @@
 #define cLLi typeFromName('c','L','L','i') // Content Light Level Information
 // Textual information
 #define tEXt typeFromName('t','E','X','t') // Textual data
-#define zTXt typeFromName('z','T','X','t') // Compressed textual data
-#define iTXt typeFromName('i','T','X','t') // International textual data
+#define zTXt typeFromName('z','T','X','t') // Compressed textual data (compressed)
+#define iTXt typeFromName('i','T','X','t') // International textual data (compressed)
 // Miscellaneous information
 #define bKGD typeFromName('b','K','G','D') // Background color
 #define hIST typeFromName('h','I','S','T') // Image histogram
