@@ -130,9 +130,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="adler.c" />
+    <ClCompile Include="bitstream.c" />
     <ClCompile Include="chunk.c" />
     <ClCompile Include="crc.c" />
+    <ClCompile Include="huffman.c" />
     <ClCompile Include="inflate.c" />
+    <ClCompile Include="window.c" />
     <ClCompile Include="zlib.c" />
     <ClCompile Include="main.c" />
   </ItemGroup>
@@ -141,9 +144,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="adler.h" />
+    <ClInclude Include="bitstream.h" />
     <ClInclude Include="chunk.h" />
     <ClInclude Include="crc.h" />
+    <ClInclude Include="huffman.h" />
     <ClInclude Include="inflate.h" />
+    <ClInclude Include="window.h" />
     <ClInclude Include="zlib.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

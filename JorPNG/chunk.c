@@ -1,5 +1,20 @@
 #include "chunk.h"
 
+print_chunk_data(uint8_t* data, uint32_t length) {
+  printf("Chunk data:\n");
+  for (size_t i = 0; i < length; i++) {
+    printf("%02X ", data[i]);
+  }
+  printf("\n");
+  for (size_t i = 0; i < length; i++) {
+    for (size_t j = 0; j < 8; j++) {
+      printf("%d", data[i] >> (7 - j) & 1);
+    }
+    printf(" ");
+  }
+  printf("\n");
+}
+
 uint8_t color_types[][28] = { "Grayscale", "", "Truecolor (RGB)", "Indexed-color (Palette)", "Greyscale with alpha", "", "Truecolor with alpha (RGBA)" };
 uint8_t compression_methods[][8] = { "Deflate" };
 uint8_t filter_methods[][19] = { "Adaptive filtering" };

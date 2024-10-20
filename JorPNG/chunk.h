@@ -119,6 +119,8 @@ bLOb  <-- 32 bit chunk type code represented in text form
 +---- Ancillary bit is 1    (lowercase letter; bit 5 is 1)
 */
 
+print_chunk_data(uint8_t* data, uint32_t length);
+
 void print_IHDR(png_IHDR* ihdr);
 void print_gAMA(png_gAMA* gama);
 void print_sRGB(png_sRGB* srgb);

@@ -7,10 +7,11 @@
 
 #include "chunk.h"
 #include "crc.h"
+#include "zlib.h"
 
 // PNG file signature (8 bytes)
 // http://www.libpng.org/pub/png/spec/1.2/PNG-Rationale.html#R.PNG-file-signature
-const uint8_t png_signature[8] = { 0x89, 'P', 'N', 'G', '\r', '\n', 0x1A, '\n'};
+const uint8_t png_signature[8] = { 0x89, 'P', 'N', 'G', '\r', '\n', 26, '\n'};
 
 void read_png(const char* filename) {
   FILE* file = fopen(filename, "rb");
@@ -61,7 +62,15 @@ void read_png(const char* filename) {
     fread(&chunk.crc, 4, 1, file);
     chunk.crc = __builtin_bswap32(chunk.crc);
 
-    fprintf(stdout, "%c%c%c%c chunk (%08X)\n", chunk.chunk_type & 0xFF, chunk.chunk_type >> 8 & 0xFF, chunk.chunk_type >> 16 & 0xFF, chunk.chunk_type >> 24 & 0xFF, chunk.crc);
+    fprintf(stdout, 
+      "%c%c%c%c chunk. Length: %u CRC: %08X\n", 
+      chunk.chunk_type & 0xFF, 
+      chunk.chunk_type >> 8 & 0xFF, 
+      chunk.chunk_type >> 16 & 0xFF,
+      chunk.chunk_type >> 24 & 0xFF,
+      chunk.length,
+      chunk.crc
+    );
 
     uint32_t c = chunk_crc((uint8_t*) &chunk.chunk_type, chunk.data, chunk.length);
 
@@ -83,6 +92,8 @@ void read_png(const char* filename) {
     }
     case IDAT: {// Data chunk
       // Process compressed image data here
+      print_chunk_data(chunk.data, chunk.length);
+      //process_zlib_stream(chunk.data, chunk.length);
       break;
     }
     case PLTE: {
