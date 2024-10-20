@@ -36,6 +36,18 @@
     <ClCompile Include="huffman.c">
       <Filter>Source Files\zlib</Filter>
     </ClCompile>
+    <ClCompile Include="bitstream.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="chunk.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="window.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib.c">
+      <Filter>Source Files\zlib</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="your_image.png">
@@ -56,6 +68,15 @@
       <Filter>Header Files\zlib</Filter>
     </ClInclude>
     <ClInclude Include="huffman.h">
+      <Filter>Header Files\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="bitstream.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="window.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib.h">
       <Filter>Header Files\zlib</Filter>
     </ClInclude>
   </ItemGroup>

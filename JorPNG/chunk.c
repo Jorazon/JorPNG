@@ -1,16 +1,19 @@
 #include "chunk.h"
 
 print_chunk_data(uint8_t* data, uint32_t length) {
-  printf("Chunk data:\n");
+  printf("Chunk data:\n| ");
   for (size_t i = 0; i < length; i++) {
     printf("%02X ", data[i]);
+    for (size_t j = 0; j < 8; j++) {
+      printf("%d", data[i] >> (7 - j) & 1);
+    }
+    printf("%s", !((i + 1) % 6) ? " |\n| " : " | ");
   }
   printf("\n");
   for (size_t i = 0; i < length; i++) {
     for (size_t j = 0; j < 8; j++) {
-      printf("%d", data[i] >> (7 - j) & 1);
+      printf("%d", (data[i] >> j) & 1);
     }
-    printf(" ");
   }
   printf("\n");
 }

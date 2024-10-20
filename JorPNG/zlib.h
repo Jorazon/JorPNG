@@ -6,6 +6,7 @@
 #include "bitstream.h"
 #include "window.h"
 #include "inflate.h"
+#include "adler.h"
 
 // https://www.rfc-editor.org/rfc/rfc1950
 // https://www.ietf.org/rfc/rfc1951.txt
@@ -14,7 +15,6 @@ typedef struct zlib_stream_struct {
   uint8_t CMF; // Compression Method and Flags
   uint8_t FLG; // FLaGs
   uint32_t DICTID;
-  uint8_t* DATA;
   uint32_t ADLER32;
 } Zlib_Stream;
 
@@ -27,7 +27,7 @@ typedef struct zlib_stream_struct {
 // Check bits for CMF and FLG. The FCHECK value must be such that CMF and FLG, when viewed as a 16 - bit unsigned integer stored in MSB order(CMF * 256 + FLG), is a multiple of 31.
 #define FCHECK(FLG) ((FLG) & 0xFF)
 // Preset dictionary
-#define FDIC(FLG) ((FLG >> 5) & 1)
+#define FDICT(FLG) ((FLG >> 5) & 1)
 // Compression level
 // 0 - fastest algorithm
 // 1 - fast algorithm

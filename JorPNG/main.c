@@ -93,7 +93,7 @@ void read_png(const char* filename) {
     case IDAT: {// Data chunk
       // Process compressed image data here
       print_chunk_data(chunk.data, chunk.length);
-      //process_zlib_stream(chunk.data, chunk.length);
+      process_zlib_stream(chunk.data, chunk.length);
       break;
     }
     case PLTE: {
