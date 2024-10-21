@@ -29,6 +29,12 @@ void read_png(const char* filename) {
     return;
   }
 
+  Bitstream output;
+  output.bit_position = 0;
+  output.byte_position = 0;
+  output.length = 0;
+  output.stream = NULL;
+
   fprintf(stdout, "PNG file\n");
 
   // Start reading chunks
@@ -63,7 +69,7 @@ void read_png(const char* filename) {
     chunk.crc = __builtin_bswap32(chunk.crc);
 
     fprintf(stdout, 
-      "%c%c%c%c chunk. Length: %u CRC: %08X\n", 
+      "Type: %c%c%c%c\nData length: %u\nCRC-32: %08X\n", 
       chunk.chunk_type & 0xFF, 
       chunk.chunk_type >> 8 & 0xFF, 
       chunk.chunk_type >> 16 & 0xFF,
@@ -88,12 +94,21 @@ void read_png(const char* filename) {
       ihdr.width = __builtin_bswap32(ihdr.width);
       ihdr.height = __builtin_bswap32(ihdr.height);
       print_IHDR(&ihdr);
+
+      extern uint8_t color_channels[];
+      size_t length = ihdr.width * ihdr.height * ihdr.bit_depth * color_channels[ihdr.color_type] / 8;
+      length = length * 115 / 100 - 1;
+      output.stream = malloc(length);
+      if (output.stream) {
+        output.length = length;
+      }
+
       break;
     }
     case IDAT: {// Data chunk
       // Process compressed image data here
       print_chunk_data(chunk.data, chunk.length);
-      process_zlib_stream(chunk.data, chunk.length);
+      process_zlib_stream(chunk.data, chunk.length, &output);
       break;
     }
     case PLTE: {
@@ -138,6 +153,9 @@ void read_png(const char* filename) {
   }
 
   fclose(file);
+
+  printf("Displaying output buffer ");
+  print_bitstream(&output);
 }
 
 // Validate crc code

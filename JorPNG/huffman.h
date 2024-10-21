@@ -12,6 +12,8 @@
 // Huffman tree node
 typedef struct HuffmanNode {
   int symbol;             // The symbol (character or value)
+  int Len;             // The code length in bits
+  int Code;               // The code
   int is_leaf;            // 1 if this is a leaf node, 0 otherwise
   struct HuffmanNode* left;  // Left child (for bit 0)
   struct HuffmanNode* right; // Right child (for bit 1)

@@ -25,10 +25,18 @@ do
 while not last block
 */
 
+uint8_t btypes[][39] = {
+  "Non-compressed block",
+  "Compression with fixed Huffman codes",
+  "Compression with dynamic Huffman codes"
+};
+
 int inflate_block(Bitstream* stream, Window* window) {
   int bfinal = read_bits(1, stream);  // 1 if this is the final block
   int btype = read_bits(2, stream);   // 2-bit block type
   
+  printf("Block type: %s (BTYPE=%d%d)\n", btypes[btype], (btype >> 1) & 1, btype & 1);
+
   if (btype == 0) {
     // Uncompressed block
     skip_to_next_byte(stream);
@@ -46,6 +54,7 @@ int inflate_block(Bitstream* stream, Window* window) {
   }
   else if (btype == 2) {
     // Dynamic Huffman codes
+    printf("Dynamic Huffman codes not implemented!\n");
     decode_dynamic_huffman_block(stream, window);
   }
   else {
@@ -53,10 +62,6 @@ int inflate_block(Bitstream* stream, Window* window) {
     return -1;
   }
 
-  if (bfinal) {
-    // This was the last block, exit the loop
-    return 0;
-  }
-
-  return 1;  // Continue to the next block
+  // Return continue to the next block if this was not the last block
+  return (bfinal == 0);
 }
