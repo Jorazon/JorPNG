@@ -30,5 +30,5 @@ uint32_t update_adler32(uint32_t adler, uint8_t* buf, size_t len) {
 }
 
 uint32_t adler32(uint8_t* buf, size_t len) {
-  return update_adler32(1L, buf, len);
+  return update_adler32(1UL, buf, len);
 }
