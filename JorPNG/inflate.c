@@ -39,7 +39,7 @@ int inflate_block(Bitstream* stream, Window* window) {
 
   if (btype == 0) {
     // Uncompressed block
-    skip_to_next_byte(stream);
+    skip_to_next_byte(stream); // Any bits of input up to the next byte boundary are ignored
     int len = read_bytes(2, stream);  // block length
     int nlen = read_bytes(2, stream); // one's complement of len
     if ((len ^ nlen) != 0xFFFF) {
@@ -54,7 +54,6 @@ int inflate_block(Bitstream* stream, Window* window) {
   }
   else if (btype == 2) {
     // Dynamic Huffman codes
-    printf("Dynamic Huffman codes not implemented!\n");
     decode_dynamic_huffman_block(stream, window);
   }
   else {
