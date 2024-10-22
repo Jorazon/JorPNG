@@ -42,6 +42,7 @@ uint32_t read_bytes(size_t count, Bitstream* stream) {
   for (uint32_t i = 0; i < count; ++i) {
     value |= (stream->buffer[stream->byte_position + (count - 1) - i] << (i * 8));
   }
+  stream->byte_position += count;
   return value;
 }
 
