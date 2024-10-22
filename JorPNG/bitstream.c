@@ -3,9 +3,6 @@
 uint8_t read_bit(Bitstream* stream) {
   int pos = stream->byte_position * 8 + stream->bit_position;
   printf("Reading bit %lu/%lu\n", pos, stream->length * 8);
-  if (pos > 80) {
-    int yamom = 69;
-  }
   if (stream->byte_position >= stream->length) {
     printf("Error: Reading past bistream end!\n");
     return -1;
@@ -28,6 +25,11 @@ uint32_t read_bits(uint32_t count, Bitstream* stream) {
 }
 
 uint32_t read_bytes(uint32_t count, Bitstream* stream) {
+  printf("Reading byte %lu/%lu\n", stream->byte_position, stream->length);
+  if (stream->byte_position >= stream->length) {
+    printf("Error: Reading past bistream end!\n");
+    return -1;
+  }
   uint32_t value = 0;
   for (uint32_t i = 0; i < count; ++i) {
     value |= (stream->stream[stream->byte_position] << (i * 8));
@@ -49,7 +51,11 @@ void skip_bytes(uint32_t count, Bitstream* stream) {
 }
 
 void put_byte(uint8_t byte, Bitstream* stream) {
-  printf("Writing byte %u/%u\n", stream->byte_position, stream->length);
+  printf("Writing byte %lu/%lu\n", stream->byte_position, stream->length);
+  if (stream->byte_position >= stream->length) {
+    printf("Error: Writing past bistream end!\n");
+    return;
+  }
   stream->stream[stream->byte_position] = byte;
   stream->byte_position++;
 }
