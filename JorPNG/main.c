@@ -96,11 +96,12 @@ void read_png(const char* filename) {
       print_IHDR(&ihdr);
 
       extern uint8_t color_channels[];
-      size_t length = ihdr.width * ihdr.height * ihdr.bit_depth * color_channels[ihdr.color_type] / 8;
-      length = length * 115 / 100 - 1;
-      output.stream = malloc(length);
+      size_t bits_per_pixel = ihdr.bit_depth * color_channels[ihdr.color_type];
+      // ((width * bits per pixel + 1 byte per scanline for filter type) * height) / bits per byte
+      size_t decompressed_bytes_count = ((ihdr.width * bits_per_pixel + 8) * ihdr.height) / 8;
+      output.stream = malloc(decompressed_bytes_count);
       if (output.stream) {
-        output.length = length;
+        output.length = decompressed_bytes_count;
       }
 
       break;
@@ -109,6 +110,7 @@ void read_png(const char* filename) {
       // Process compressed image data here
       print_chunk_data(chunk.data, chunk.length);
       process_zlib_stream(chunk.data, chunk.length, &output);
+      // TODO reverse filtering
       break;
     }
     case PLTE: {
