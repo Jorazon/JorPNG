@@ -55,7 +55,7 @@ void put_byte(uint8_t byte, Bitstream* stream) {
 }
 
 void print_bitstream(Bitstream* stream) {
-  printf("Bitstream content:\n");
+  printf("Bitstream content (%lu bytes):\n", stream->length);
   for (size_t i = 0; i < stream->length; i++) {
     printf("%02X ", stream->stream[i]);
   }
