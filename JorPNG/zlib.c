@@ -36,12 +36,12 @@ void process_zlib_stream(uint8_t* data, uint32_t length, Bitstream* output) {
 
   free(window.window);
 
+  skip_to_next_byte(&bitstream); // is this needed? Yes!
+
   zlib_stream.ADLER32 = read_bytes(sizeof(zlib_stream.ADLER32), &bitstream);
 
   uint32_t bitcount = (bitstream.length - bitstream.byte_position) * 8 - bitstream.bit_position;
   printf("%u/%u bits processed (%u left)\n", ((bitstream.length * 8) - bitcount), bitstream.length * 8, bitcount);
-
-  //skip_to_next_byte(&bitstream); // is this needed?
 
   print_stream_info(&zlib_stream);
 }
