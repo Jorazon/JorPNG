@@ -11,11 +11,8 @@ uint64_t LZ77_window_size(CMF cmf) {
 
 void process_zlib_stream(uint8_t* data, uint32_t length, Bitstream* output) {
   
-  Bitstream bitstream = { 0 };
-  bitstream.bit_position = 0;
-  bitstream.byte_position = 0;
-  bitstream.stream = data;
-  bitstream.length = length;
+  Bitstream bitstream;
+  init_bitstream(&bitstream, data, length);
 
   Zlib_Stream zlib_stream = { 0 };
   zlib_stream.CMF.byte = read_bytes(sizeof(zlib_stream.CMF), &bitstream);

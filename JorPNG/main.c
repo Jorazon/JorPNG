@@ -30,10 +30,6 @@ void read_png(const char* filename) {
   }
 
   Bitstream output;
-  output.bit_position = 0;
-  output.byte_position = 0;
-  output.length = 0;
-  output.stream = NULL;
 
   fprintf(stdout, "PNG file\n");
 
@@ -99,9 +95,9 @@ void read_png(const char* filename) {
       size_t bits_per_pixel = ihdr.bit_depth * color_channels[ihdr.color_type];
       // ((width * bits per pixel + 1 byte per scanline for filter type) * height) / bits per byte
       size_t decompressed_bytes_count = ((ihdr.width * bits_per_pixel + 8) * ihdr.height) / 8;
-      output.stream = malloc(decompressed_bytes_count);
-      if (output.stream) {
-        output.length = decompressed_bytes_count;
+      uint8_t* buffer = (uint8_t*)malloc(decompressed_bytes_count);
+      if (buffer) {
+        init_bitstream(&output, buffer, decompressed_bytes_count);
       }
 
       break;

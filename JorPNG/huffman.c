@@ -9,7 +9,7 @@ HuffmanNode* create_node(int symbol, int is_leaf);
 void copy_uncompressed_data(int len, Bitstream* stream, Window* window) {
   // Read and output 'len' bytes of uncompressed data
   for (int i = 0; i < len; i++) {
-    uint8_t byte = read_bytes(1, stream);// stream->stream[stream->byte_position];
+    uint8_t byte = read_bytes(1, stream);// stream->buffer[stream->byte_position];
     output_byte(byte, window);  // Output the byte to your decompression buffer
   }
 }
