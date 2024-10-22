@@ -80,4 +80,9 @@
       <Filter>Header Files\zlib</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="IDAT.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+  </ItemGroup>
 </Project>
