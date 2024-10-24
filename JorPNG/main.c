@@ -8,6 +8,7 @@
 #include "chunk.h"
 #include "crc.h"
 #include "zlib.h"
+#include "huffman.h"
 
 // PNG file signature (8 bytes)
 // http://www.libpng.org/pub/png/spec/1.2/PNG-Rationale.html#R.PNG-file-signature
@@ -164,8 +165,75 @@ void crc_test() {
   printf("%X == %X: %s", expected, result, result == expected ? "True" : "False");
 }
 
+// Validate huffman tree traversal decoding
+void huffman_tree_test() {
+// Create a simple test tree
+//     (*)
+//     / \
+//   (A) (*)
+//       / \
+//     (B) (C)
+
+  HuffmanNode* root = malloc(sizeof(HuffmanNode));
+  HuffmanNode* node1 = malloc(sizeof(HuffmanNode));
+  HuffmanNode* leafA = malloc(sizeof(HuffmanNode));
+  HuffmanNode* leafB = malloc(sizeof(HuffmanNode));
+  HuffmanNode* leafC = malloc(sizeof(HuffmanNode));
+
+  if (!root || !node1 || !leafA || !leafB || !leafC) {
+    return;
+  }
+
+  root->symbol = -1;  // Internal node
+  node1->symbol = -1; // Internal node
+  leafA->symbol = 'A';// Leaf node (A)
+  leafB->symbol = 'B';// Leaf node (B)
+  leafC->symbol = 'C';// Leaf node (C)
+
+  root->is_leaf = 0;
+  node1->is_leaf = 0;
+  leafA->is_leaf = 1;
+  leafB->is_leaf = 1;
+  leafC->is_leaf = 1;
+
+  // Set up tree structure
+  root->left = leafA;
+  root->right = node1;
+  node1->left = leafB;
+  node1->right = leafC;
+
+  HuffmanTree debug_tree;
+  debug_tree.root = root;
+  debug_tree.num_symbols = 3;
+
+  const uint8_t input_data[] = { 0b11010U }; // Example: A (0), B (10), C (11)
+
+  BitStream stream;
+  init_bitstream(&stream, input_data, 1);
+
+  // Decode symbols from the stream
+  for (int i = 0; i < debug_tree.num_symbols; ++i) {
+    int symbol = decode_huffman_symbol(&debug_tree, &stream);
+    if (symbol != -1) {
+      printf("Decoded symbol: %c\n", symbol);
+    }
+    else {
+      printf("Failed to decode symbol\n");
+    }
+  }
+
+  // Cleanup tree (free memory)
+  free(leafC);
+  free(leafB);
+  free(node1);
+  free(leafA);
+  free(root);
+}
+
 int main() {
   read_png("your_image.png");
-  //crcTest();
+  //crc_test();
+  //huffman_tree_test();
+  // TODO extract test functions to own files
   return 0;
 }
