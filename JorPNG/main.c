@@ -157,7 +157,7 @@ void read_png(const char* filename) {
 }
 
 // Validate crc code
-void crcTest() {
+void crc_test() {
   uint8_t data[3] = {'a', 'b', 'c'};
   uint32_t expected = 0x352441C2;
   uint32_t result = crc(data, sizeof(data));
