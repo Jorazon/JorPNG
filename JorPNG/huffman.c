@@ -216,7 +216,7 @@ void decode_fixed_huffman_block(BitStream* stream, Window* window) {
 
   build_huffman_tree(&fixed_tree, lengths, num_symbols);
 
-  print_huffman_tree(fixed_tree.root, 0);
+  //print_huffman_tree(fixed_tree.root, 0);
 
   while (1) {
     // Huffman tree for fixed codes: literals 0-255, end-of-block, lengths 3-258, distances 1-32
