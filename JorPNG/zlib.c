@@ -9,7 +9,7 @@ uint64_t LZ77_window_size(CMF cmf) {
   return 1ULL << (cmf.CINFO + 8);
 }
 
-void process_zlib_stream(uint8_t* data, uint32_t length, Bitstream* output) {
+void process_zlib_stream(uint8_t* data, uint32_t length, BitStream* output) {
   
   BitStream bitstream;
   init_bitstream(&bitstream, data, length);

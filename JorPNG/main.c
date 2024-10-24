@@ -29,7 +29,7 @@ void read_png(const char* filename) {
     return;
   }
 
-  Bitstream output;
+  BitStream output;
 
   fprintf(stdout, "PNG file\n");
 
