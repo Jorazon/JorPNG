@@ -1,9 +1,10 @@
 #include "window.h"
 
 // initialize passed window. rememeber to free
-void create_window(Window* window, size_t size) {
+void init_window(Window* window, size_t size, BitStream* output) {
   window->window_pos = 0;
   window->size = size;
+  window->output = output;
   window->window = (uint8_t*)malloc(size * sizeof(uint8_t));
   if (!window->window) {
     fprintf(stderr, "Failed to create window!\n");

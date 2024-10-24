@@ -13,6 +13,6 @@ typedef struct window_struct {
   BitStream* output;
 } Window;
 
-void create_window(Window* window, size_t size);
+void init_window(Window* window, size_t size, BitStream* output);
 void copy_from_window(int length, int distance, Window* window);
 void output_byte(uint8_t byte, Window* window);

@@ -23,8 +23,7 @@ void process_zlib_stream(uint8_t* data, uint32_t length, BitStream* output) {
   
   Window window;
   size_t size = LZ77_window_size(zlib_stream.CMF);
-  create_window(&window, size);
-  window.output = output;
+  init_window(&window, size, output);
 
   int block = 1;
   do {
