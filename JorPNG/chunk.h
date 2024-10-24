@@ -44,6 +44,8 @@
 #define fdAT typeFromName('f','d','A','T') // Frame Data Chunk
 #pragma endregion chunk types
 
+extern uint8_t color_channels[];
+
 // https://learn.microsoft.com/en-us/cpp/preprocessor/pack?view=msvc-170
 #pragma pack(push, 1)
 // http://www.libpng.org/pub/png/spec/1.2/PNG-Structure.html#Chunk-layout
