@@ -48,6 +48,9 @@
     <ClCompile Include="zlib.c">
       <Filter>Source Files\zlib</Filter>
     </ClCompile>
+    <ClCompile Include="inflate_test.c">
+      <Filter>Source Files\zlib</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="your_image.png">

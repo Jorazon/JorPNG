@@ -14,6 +14,8 @@
 // http://www.libpng.org/pub/png/spec/1.2/PNG-Rationale.html#R.PNG-file-signature
 const uint8_t png_signature[8] = { 0x89, 'P', 'N', 'G', '\r', '\n', 26, '\n'};
 
+png_IHDR ihdr = { 0 };
+
 void read_png(const char* filename) {
   FILE* file = fopen(filename, "rb");
   if (!file) {
@@ -86,7 +88,6 @@ void read_png(const char* filename) {
     chunk.chunk_type = __builtin_bswap32(chunk.chunk_type);
     switch (chunk.chunk_type) {
     case IHDR: { // Header chunk
-      png_IHDR ihdr = { 0 };
       memcpy(&ihdr, chunk.data, sizeof(png_IHDR));
       ihdr.width = __builtin_bswap32(ihdr.width);
       ihdr.height = __builtin_bswap32(ihdr.height);
@@ -231,9 +232,10 @@ void huffman_tree_test() {
 }
 
 int main() {
-  read_png("your_image.png");
+  //read_png("0088FF.png");
   //crc_test();
   //huffman_tree_test();
+  test_inflate();
   // TODO extract test functions to own files
   return 0;
 }

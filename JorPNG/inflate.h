@@ -10,3 +10,4 @@
 #include "huffman.h"
 
 int inflate_block(BitStream* stream, Window* window);
+void test_inflate();

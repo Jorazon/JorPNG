@@ -133,6 +133,7 @@
     <ClCompile Include="bitstream.c" />
     <ClCompile Include="chunk.c" />
     <ClCompile Include="crc.c" />
+    <ClCompile Include="inflate_test.c" />
     <ClCompile Include="huffman.c" />
     <ClCompile Include="inflate.c" />
     <ClCompile Include="window.c" />
