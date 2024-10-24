@@ -22,4 +22,4 @@ uint32_t read_bytes(size_t count, BitStream * stream);
 void skip_to_next_byte(BitStream * stream);
 
 void put_byte(uint8_t byte, BitStream* stream);
-void print_bitstream(BitStream* stream);
+void print_bitstream(BitStream* stream, size_t newline_evert_n_bytes);

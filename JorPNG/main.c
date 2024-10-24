@@ -154,7 +154,7 @@ void read_png(const char* filename) {
   fclose(file);
 
   printf("Displaying output buffer ");
-  print_bitstream(&output);
+  print_bitstream(&output, ihdr.width * (size_t)color_channels[ihdr.color_type] + 1ULL);
 }
 
 // Validate crc code

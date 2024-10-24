@@ -121,10 +121,14 @@ void put_byte(uint8_t byte, BitStream* stream) {
   stream->byte_position++;
 }
 
-void print_bitstream(BitStream* stream) {
+void print_bitstream(BitStream* stream, size_t newline_every_n_bytes) {
   printf("BitStream content (%llu bytes):\n", stream->length);
   for (size_t i = 0; i < stream->length; i++) {
     printf("%02X ", stream->buffer[i]);
+    // print newline every n bytes, except on last byte
+    if (newline_every_n_bytes > 0 && (i + 1) % newline_every_n_bytes == 0 && i < stream->length - 1) {
+      printf("\n");
+    }
   }
   uint32_t adler = adler32(stream->buffer, stream->length);
   printf("\nAdler-32: %08X\n", adler);
