@@ -51,11 +51,11 @@ void print_huffman_tree(HuffmanNode* node, int depth) {
   if (node == NULL) return;
 
   if (node->is_leaf) {
-    printf("Symbol: %d Length: %d Code: ", node->symbol, node->Len);
+    printf("Symbol: %d\tLength: %d\tCode: ", node->symbol, node->Len);
     for (size_t i = 0; i < node->Len; i++) {
       printf("%d", node->Code >> (node->Len - 1 - i) & 1);
     }
-    printf(" Depth: %d\n", depth);
+    printf("\tDepth: %d\n", depth);
   }
   else {
     print_huffman_tree(node->left, depth + 1);
