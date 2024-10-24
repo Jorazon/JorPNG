@@ -2,11 +2,10 @@
 
 // Function prototypes
 
-int decode_symbol(HuffmanTree* tree, Bitstream* stream);
 void insert_symbol(HuffmanTree* tree, int symbol, int code, int length);
 HuffmanNode* create_node(int symbol, int is_leaf);
 
-void copy_uncompressed_data(int len, Bitstream* stream, Window* window) {
+void copy_uncompressed_data(int len, BitStream* stream, Window* window) {
   // Read and output 'len' bytes of uncompressed data
   for (int i = 0; i < len; i++) {
     uint8_t byte = read_bytes(1, stream);// stream->buffer[stream->byte_position];
@@ -113,7 +112,7 @@ static const int length_base[] = { 3,4,5,6,7,8,9,10,11,13,15,17,19,23,27,31,35,4
 static const int length_extra_bits[] = { 0,0,0,0,0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,0 };
 
 // Decode a length from the Huffman code
-int decode_length(int symbol, Bitstream* stream) {
+int decode_length(int symbol, BitStream* stream) {
   if (symbol < 257 || symbol > 285) {
     fprintf(stderr, "Error: Invalid length symbol %d\n", symbol);
     return -1;
@@ -123,7 +122,7 @@ int decode_length(int symbol, Bitstream* stream) {
 
   // Read extra bits if needed
   if (length_extra_bits[symbol - 257] > 0) {
-    int extra = read_bits(length_extra_bits[symbol - 257], stream);
+    int extra = read_bits_lsb(length_extra_bits[symbol - 257], stream);
     length += extra;
   }
 
@@ -134,7 +133,7 @@ static const int distance_base[] = { 1,2,3,4,5,7,9,13,17,25,33,49,65,97,129,193,
 static const int distance_extra_bits[] = { 0,0,0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13 };
 
 // Decode a distance from the Huffman code
-int decode_distance(int symbol, Bitstream* stream) {
+int decode_distance(int symbol, BitStream* stream) {
 
   if (symbol < 0 || symbol > 29) {
     fprintf(stderr, "Error: Invalid distance symbol %d\n", symbol);
@@ -145,7 +144,7 @@ int decode_distance(int symbol, Bitstream* stream) {
 
   // Read extra bits if needed
   if (distance_extra_bits[symbol] > 0) {
-    int extra = read_bits(distance_extra_bits[symbol], stream);
+    int extra = read_bits_lsb(distance_extra_bits[symbol], stream);
     distance += extra;
   }
 
@@ -156,7 +155,7 @@ int decode_distance(int symbol, Bitstream* stream) {
 static int length_extra_bits_fixed[] = { 0,0,0,0,1,1,2,2,3,3,4,4,5,5,0 };
 
 // Decode length from Huffman code
-int decode_fixed_length(int litlen, Bitstream* stream) {
+int decode_fixed_length(int litlen, BitStream* stream) {
   if (litlen < 257 || litlen > 285) {
     printf("Invalid length code!\n");
     return -1;
@@ -164,22 +163,22 @@ int decode_fixed_length(int litlen, Bitstream* stream) {
 
   int length = length_base[(litlen - 257)];
   int extra = length_extra_bits_fixed[litlen - 257];
-  return length + read_bits(extra, stream);
+  return length + read_bits_lsb(extra, stream);
 }
 
 // Decode distance using fixed Huffman codes
-int decode_fixed_distance(Bitstream* stream) {
-  int dist_code = read_bits(5, stream);
+int decode_fixed_distance(BitStream* stream) {
+  int dist_code = read_bits_lsb(5, stream);
 
   int distance = distance_base[dist_code];
   int extra_bits = distance_extra_bits[dist_code];
-  distance += read_bits(extra_bits, stream);
+  distance += read_bits_lsb(extra_bits, stream);
 
   return distance;
 }
 
-int decode_fixed_huffman_literal(Bitstream* stream) {
-  int code = read_bits(7, stream);  // Initially, read the first 7 bits
+int decode_fixed_huffman_literal(BitStream* stream) {
+  int code = read_bits_lsb(7, stream);  // Initially, read the first 7 bits
 
   if (code <= 23) {
     return code + 256;  // Return literal length code (256-279)
@@ -196,7 +195,7 @@ int decode_fixed_huffman_literal(Bitstream* stream) {
 }
 
 #define num_symbols 288
-void decode_fixed_huffman_block(Bitstream* stream, Window* window) {
+void decode_fixed_huffman_block(BitStream* stream, Window* window) {
   int lengths[num_symbols] = { 0 };
 
   for (size_t i = 0; i < num_symbols; i++) {
@@ -223,7 +222,7 @@ void decode_fixed_huffman_block(Bitstream* stream, Window* window) {
     // Huffman tree for fixed codes: literals 0-255, end-of-block, lengths 3-258, distances 1-32
     //int litlen = decode_fixed_huffman_literal(stream);  // Decode using fixed Huffman codes
 
-    int litlen = decode_symbol(&fixed_tree, stream);
+    int litlen = decode_huffman_symbol(&fixed_tree, stream);
 
     if (litlen < 256) {
       // Literal byte, output it directly
@@ -243,13 +242,13 @@ void decode_fixed_huffman_block(Bitstream* stream, Window* window) {
 }
 
 // Decode a symbol from the Huffman tree
-int decode_symbol(HuffmanTree* tree, Bitstream* stream) {
+int decode_huffman_symbol(HuffmanTree* tree, BitStream* stream) {
   HuffmanNode* node = tree->root;
   int bit_count = 0;  // To track how many bits have been read
 
   // Traverse the tree bit by bit
-  while (!node->is_leaf) {
-    int bit = read_bits(1, stream);
+  while (!node->is_leaf) { // is_leaf may not be necessary as non leaves have symbol -1
+    uint32_t bit = read_bits_lsb(1, stream);
     if (bit == -1) {
       fprintf(stderr, "Error: Failed to read bit from stream.\n");
       return -1;
@@ -271,15 +270,15 @@ int decode_symbol(HuffmanTree* tree, Bitstream* stream) {
     }
   }
 
-  printf("Decoded symbol: %d after %d bits\n", node->symbol, bit_count);
+  printf("Decoded symbol: %d (%#X %c) after %d bits\n", node->symbol, node->symbol, node->symbol, bit_count);
   return node->symbol;
 }
 
-void decode_compressed_data(HuffmanTree* literal_length_tree, HuffmanTree* distance_tree, Bitstream* stream, Window* window) {
+void decode_compressed_data(HuffmanTree* literal_length_tree, HuffmanTree* distance_tree, BitStream* stream, Window* window) {
   int symbol;
 
   // Decode each symbol from the literal/length tree
-  while ((symbol = decode_symbol(literal_length_tree, stream)) != 256) {  // 256 is the end-of-block symbol
+  while ((symbol = decode_huffman_symbol(literal_length_tree, stream)) != 256) {  // 256 is the end-of-block symbol
     if (symbol < 256) {
       // It's a literal byte, output it
       output_byte((uint8_t)symbol, window);
@@ -288,7 +287,7 @@ void decode_compressed_data(HuffmanTree* literal_length_tree, HuffmanTree* dista
       // It's a length-distance pair, decode the length and distance
       int length = decode_length(symbol, stream);
       /*
-      int distance = decode_symbol(distance_tree, stream);
+      int distance = decode_huffman_symbol(distance_tree, stream);
       distance = decode_distance(distance, stream);
       */
       int distance = decode_distance(symbol, stream);
@@ -299,18 +298,18 @@ void decode_compressed_data(HuffmanTree* literal_length_tree, HuffmanTree* dista
   }
 }
 
-void decode_dynamic_huffman_block(Bitstream* stream, Window* window) {
+void decode_dynamic_huffman_block(BitStream* stream, Window* window) {
   // Step 1: Read the number of literal/length and distance codes
-  int HLIT = read_bits(5, stream) + 257;  // Number of literal/length codes (257-286)
-  int HDIST = read_bits(5, stream) + 1;   // Number of distance codes (1-32)
-  int HCLEN = read_bits(4, stream) + 4;   // Number of code length codes (4-19)
+  int HLIT = read_bits_lsb(5, stream) + 257;  // Number of literal/length codes (257-286)
+  int HDIST = read_bits_lsb(5, stream) + 1;   // Number of distance codes (1-32)
+  int HCLEN = read_bits_lsb(4, stream) + 4;   // Number of code length codes (4-19)
 
   // Step 2: Read the code lengths for the code length alphabet
   int code_length_order[19] = { 16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15 };
   int code_length_lengths[19] = { 0 };  // Code lengths for the code length alphabet
 
   for (int i = 0; i < HCLEN; i++) {
-    code_length_lengths[code_length_order[i]] = read_bits(3, stream);  // Read 3-bit code lengths
+    code_length_lengths[code_length_order[i]] = read_bits_lsb(3, stream);  // Read 3-bit code lengths
   }
 
   // Step 3: Build Huffman tree for the code length alphabet
@@ -323,7 +322,7 @@ void decode_dynamic_huffman_block(Bitstream* stream, Window* window) {
 
   int i = 0;
   while (i < HLIT + HDIST) {
-    int symbol = decode_symbol(&code_length_tree, stream);  // Decode a symbol from the code length tree
+    int symbol = decode_huffman_symbol(&code_length_tree, stream);  // Decode a symbol from the code length tree
     if (symbol <= 15) {
       // Symbols 0-15 represent literal lengths directly
       if (i < HLIT) {
@@ -336,7 +335,7 @@ void decode_dynamic_huffman_block(Bitstream* stream, Window* window) {
     }
     else if (symbol == 16) {
       // Repeat the last length 3-6 times
-      int repeat_length = 3 + read_bits(2, stream);  // Read 2 extra bits (3-6 repeats)
+      int repeat_length = 3 + read_bits_lsb(2, stream);  // Read 2 extra bits (3-6 repeats)
       int last_length = (i < HLIT) ? literal_length_lengths[i - 1] : distance_lengths[i - HLIT - 1];
 
       for (int j = 0; j < repeat_length && i < HLIT + HDIST; j++) {
@@ -351,7 +350,7 @@ void decode_dynamic_huffman_block(Bitstream* stream, Window* window) {
     }
     else if (symbol == 17) {
       // Repeat a zero length 3-10 times
-      int repeat_length = 3 + read_bits(3, stream);  // Read 3 extra bits (3-10 repeats)
+      int repeat_length = 3 + read_bits_lsb(3, stream);  // Read 3 extra bits (3-10 repeats)
       for (int j = 0; j < repeat_length && i < HLIT + HDIST; j++) {
         if (i < HLIT) {
           literal_length_lengths[i] = 0;
@@ -364,7 +363,7 @@ void decode_dynamic_huffman_block(Bitstream* stream, Window* window) {
     }
     else if (symbol == 18) {
       // Repeat a zero length 11-138 times
-      int repeat_length = 11 + read_bits(7, stream);  // Read 7 extra bits (11-138 repeats)
+      int repeat_length = 11 + read_bits_lsb(7, stream);  // Read 7 extra bits (11-138 repeats)
       for (int j = 0; j < repeat_length && i < HLIT + HDIST; j++) {
         if (i < HLIT) {
           literal_length_lengths[i] = 0;

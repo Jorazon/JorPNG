@@ -10,7 +10,7 @@ typedef struct window_struct {
   uint8_t* window;
   int window_pos;
   size_t size;
-  Bitstream* output;
+  BitStream* output;
 } Window;
 
 void create_window(Window* window, size_t size);

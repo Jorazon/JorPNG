@@ -25,6 +25,7 @@ typedef struct HuffmanTree {
   int num_symbols;     // Number of symbols in the Huffman tree
 } HuffmanTree;
 
-void copy_uncompressed_data(int len, Bitstream* stream, Window* window);
-void decode_fixed_huffman_block(Bitstream* stream, Window* window);
-void decode_dynamic_huffman_block(Bitstream* stream, Window* window);
+void copy_uncompressed_data(int len, BitStream* stream, Window* window);
+void decode_fixed_huffman_block(BitStream* stream, Window* window);
+void decode_dynamic_huffman_block(BitStream* stream, Window* window);
+int decode_huffman_symbol(HuffmanTree* tree, BitStream* stream);

@@ -31,9 +31,9 @@ uint8_t btypes[][39] = {
   "Compression with dynamic Huffman codes"
 };
 
-int inflate_block(Bitstream* stream, Window* window) {
-  int bfinal = read_bits(1, stream);  // 1 if this is the final block
-  int btype = read_bits(2, stream);   // 2-bit block type
+int inflate_block(BitStream* stream, Window* window) {
+  int bfinal = read_bits_lsb(1, stream);  // 1 if this is the final block
+  int btype = read_bits_lsb(2, stream);   // 2-bit block type
   
   printf("Block type: %s (BTYPE=%d%d)\n", btypes[btype], (btype >> 1) & 1, btype & 1);
 

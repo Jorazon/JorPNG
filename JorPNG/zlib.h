@@ -35,5 +35,5 @@ typedef struct zlib_stream_struct {
   uint32_t ADLER32;
 } Zlib_Stream;
 
-void process_zlib_stream(uint8_t* data, uint32_t length, Bitstream* output);
+void process_zlib_stream(uint8_t* data, uint32_t length, BitStream* output);
 void print_stream_info(Zlib_Stream* stream);

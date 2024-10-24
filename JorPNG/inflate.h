@@ -9,4 +9,4 @@
 #include "window.h"
 #include "huffman.h"
 
-int inflate_block(Bitstream* stream, Window* window);
+int inflate_block(BitStream* stream, Window* window);

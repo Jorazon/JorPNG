@@ -1,40 +1,98 @@
 #include "bitstream.h"
 
-void init_bitstream(Bitstream* stream, uint8_t* buffer, size_t length) {
+void init_bitstream(BitStream* stream, uint8_t* buffer, size_t length) {
   stream->buffer = buffer;
   stream->length = length;
   stream->bit_position = 0;
   stream->byte_position = 0;
 }
 
-uint8_t read_bit(Bitstream* stream) {
-  size_t pos = stream->byte_position * 8 + stream->bit_position;
-  printf("Reading bit %llu/%llu\n", pos, stream->length * 8);
-  if (stream->byte_position >= stream->length) {
-    printf("Error: Reading past bistream end!\n");
+int check_stream_oob(BitStream* stream) {
+  int oob = stream->byte_position >= stream->length;
+  if (oob) {
+    fprintf(stderr, "Error: Reading past bistream end!\n");
+  }
+  return oob;
+}
+
+// Move to the next bit
+void advance_bit(BitStream* stream) {
+  stream->bit_position++;
+  if (stream->bit_position >= 8) {
+    stream->bit_position = 0; // Reset bit position
+    stream->byte_position++;  // Move to the next byte
+  }
+}
+
+// Read a single bit in LSB-first order from the bit stream
+uint8_t read_bit_lsb(BitStream* stream) {
+  if (check_stream_oob(stream)) {
     return -1;
   }
-  uint8_t bit = stream->buffer[stream->byte_position] >> stream->bit_position & 1;
-  stream->bit_position++;
-  if (stream->bit_position == 8) {
-    stream->byte_position++;
-    stream->bit_position = 0;
-  }
+  // Get the current byte
+  uint8_t current_byte = stream->buffer[stream->byte_position];
+  // Extract the bit at the current bit position (LSB first)
+  uint8_t bit = (current_byte >> stream->bit_position) & 1;
+  printf("Reading bit %llu/%llu: %u (LSB)\n", stream->byte_position * 8 + stream->bit_position, stream->length * 8, bit);
+  advance_bit(stream);
   return bit;
 }
 
-uint32_t read_bits(size_t count, Bitstream* stream) {
-  uint32_t value = 0;
-  for (uint32_t i = 0; i < count; ++i) {
-    value |= (read_bit(stream) << i);
+// Read a specified number of bits (LSB-first) from the bit stream
+uint32_t read_bits_lsb(size_t num_bits, BitStream* stream) {
+  uint32_t result = 0;
+  for (size_t i = 0; i < num_bits; i++) {
+    result |= (read_bit_lsb(stream) << i);   // LSB first
   }
-  return value;
+  return result;
 }
 
-uint32_t read_bytes(size_t count, Bitstream* stream) {
+// Read a single bit in MSB-first order from the bit stream
+uint8_t read_bit_msb(BitStream* stream) {
+  if (check_stream_oob(stream)) {
+    return -1;
+  }
+  // Get the current byte
+  uint8_t current_byte = stream->buffer[stream->byte_position];
+  // Calculate the current bit index (MSB first)
+  uint8_t bit = (current_byte >> (7 - stream->bit_position)) & 1;
+  printf("Read bit %llu/%llu: %u (MSB)\n", stream->byte_position * 8 + stream->bit_position, stream->length * 8, bit);
+  advance_bit(stream);
+  return bit;
+}
+
+// Read a specified number of bits (MSB-first) from the bit stream
+uint32_t read_bits_msb(size_t num_bits, BitStream* stream) {
+  uint32_t result = 0;
+  for (size_t i = 0; i < num_bits; i++) {
+    result = (result << 1) | read_bit_msb(stream);  // MSB first
+  }
+  return result;
+}
+
+// Helper function to reverse bits of a Huffman code (MSB first to LSB first)
+uint32_t reverse_bits(uint32_t code, size_t num_bits) {
+  uint32_t reversed = 0;
+  for (size_t i = 0; i < num_bits; i++) {
+    reversed |= ((code >> i) & 1) << (num_bits - 1 - i);
+  }
+  return reversed;
+}
+
+// Read a Huffman code from the bit stream (with MSB-first order)
+uint32_t read_huffman_code(size_t code_length, BitStream* stream) {
+  if (check_stream_oob(stream)) {
+    return -1;
+  }
+  // Read the Huffman code as MSB-first
+  uint32_t code = read_bits_msb(code_length, stream);
+  // Reverse the bits of the code to interpret in LSB-first order
+  return reverse_bits(code, code_length);
+}
+
+uint32_t read_bytes(size_t count, BitStream* stream) {
   printf("Reading byte %llu/%llu\n", stream->byte_position, stream->length);
-  if (stream->byte_position >= stream->length) {
-    printf("Error: Reading past bistream end!\n");
+  if (check_stream_oob(stream)) {
     return -1;
   }
   uint32_t value = 0;
@@ -46,19 +104,14 @@ uint32_t read_bytes(size_t count, Bitstream* stream) {
   return value;
 }
 
-void skip_to_next_byte(Bitstream* stream) {
+void skip_to_next_byte(BitStream* stream) {
   if (stream->bit_position > 0) {
     stream->bit_position = 0;
     stream->byte_position++;
   }
 }
 
-void skip_bytes(size_t count, Bitstream* stream) {
-  stream->bit_position = 0;
-  stream->byte_position += count;
-}
-
-void put_byte(uint8_t byte, Bitstream* stream) {
+void put_byte(uint8_t byte, BitStream* stream) {
   printf("Writing byte %llu/%llu\n", stream->byte_position, stream->length);
   if (stream->byte_position >= stream->length) {
     printf("Error: Writing past bistream end!\n");
@@ -68,8 +121,8 @@ void put_byte(uint8_t byte, Bitstream* stream) {
   stream->byte_position++;
 }
 
-void print_bitstream(Bitstream* stream) {
-  printf("Bitstream content (%llu bytes):\n", stream->length);
+void print_bitstream(BitStream* stream) {
+  printf("BitStream content (%llu bytes):\n", stream->length);
   for (size_t i = 0; i < stream->length; i++) {
     printf("%02X ", stream->buffer[i]);
   }

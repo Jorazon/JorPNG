@@ -10,12 +10,16 @@ typedef struct bitstream_struct {
   uint8_t bit_position;
   size_t byte_position;
   size_t length;
-} Bitstream;
+} BitStream;
 
-void init_bitstream(Bitstream* stream, uint8_t* buffer, size_t length);
-uint32_t read_bits(size_t count, Bitstream * stream);
-uint32_t read_bytes(size_t count, Bitstream * stream);
-void skip_to_next_byte(Bitstream * stream);
-void skip_bytes(size_t count, Bitstream * stream);
-void put_byte(uint8_t byte, Bitstream* stream);
-void print_bitstream(Bitstream* stream);
+void init_bitstream(BitStream* stream, uint8_t* buffer, size_t length);
+
+uint32_t read_bits_lsb(size_t num_bits, BitStream* stream);
+uint32_t read_bits_msb(size_t num_bits, BitStream* stream);
+uint32_t read_huffman_code(size_t code_length, BitStream* stream);
+uint32_t read_bytes(size_t count, BitStream * stream);
+
+void skip_to_next_byte(BitStream * stream);
+
+void put_byte(uint8_t byte, BitStream* stream);
+void print_bitstream(BitStream* stream);
