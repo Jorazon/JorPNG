@@ -22,7 +22,7 @@ void output_byte(uint8_t byte, Window* window) {
   window->window_pos %= window->size;
   //putchar(byte);  // Write to stdout or save to buffer
   put_byte(byte, window->output);
-  printf("Outputting 0x%02X %u ", byte, byte);
+  printf("Outputting 0x%02X %u 0b", byte, byte);
   for (size_t j = 0; j < 8; j++) {
     printf("%d", byte >> (7 - j) & 1);
   }
@@ -39,5 +39,5 @@ void copy_from_window(int length, int distance, Window* window) {
     src_pos++;
     src_pos %= window->size;
   }
-  printf("Copied %d..%d\n", distance, distance + length);
+  printf("Copied %d bytes (%d..%d)\n", length, distance, distance + length);
 }
